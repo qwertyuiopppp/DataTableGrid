@@ -6,12 +6,15 @@ namespace DataTableGrid.Models;
 
 public class People
 {
-    private PersonsTable _people = new();
-    private PersonsList peopleList = new();
+    private readonly PersonsTable _people = new();
+    private readonly PersonsList _peopleList = new();
     public People()
     {
         AddSamplePeople();
     }
+    
+    public PersonsList PeopleList => _peopleList;
+    public DataTable PeopleTable => _people;
 
     private void AddSamplePeople()
     {
@@ -21,10 +24,10 @@ public class People
 
     private void Populate_PeopleList()
     {
-        peopleList.Clear();
+        _peopleList.Clear();
         foreach (DataRow row in _people.Rows)
         {
-            peopleList.Add(_people.GetPerson(row));
+            _peopleList.Add(_people.GetPerson(row));
         }
     }
 
@@ -42,7 +45,7 @@ public class People
     }
     public PersonsList GetPeopleList()
     {
-        return peopleList;
+        return _peopleList;
     }
 
 }
