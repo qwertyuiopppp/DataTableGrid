@@ -11,6 +11,9 @@ public class People
     public People()
     {
         AddSamplePeople();
+        _people.ColumnChanged += people_ColumnChanged;
+        _people.ColumnChanging += people_ColumnChanging;
+
     }
     
     public PersonsList PeopleList => _peopleList;
@@ -39,6 +42,21 @@ public class People
         _people.Rows.Add("Sue", "Smith", 28);
     }
 
+    private void people_ColumnChanging(object sender, DataColumnChangeEventArgs e)
+    {
+        string columnName = e.Column?.ColumnName?? "";
+        Console.WriteLine($"Column '{columnName}' in row {e.Row} changing from {e.Row[e.Column]} to {e.ProposedValue}");
+        // Perform any necessary actions based on the column change
+        Populate_PeopleList();
+    }
+    private void people_ColumnChanged(object sender, DataColumnChangeEventArgs e)
+    {
+        string columnName = e.Column?.ColumnName?? "";
+        Console.WriteLine($"Column '{columnName}' in row {e.Row} changed to {e.Row[e.Column]}");
+        // Perform any necessary actions based on the column change
+        Populate_PeopleList();
+    }
+    
     public DataTable GetPeopleTable()
     {
         return _people;

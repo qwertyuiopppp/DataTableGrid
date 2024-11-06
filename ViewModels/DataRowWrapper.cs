@@ -8,9 +8,10 @@ public class DataRowWrapper(DataRow row) : ObservableObject
     public object this[string columnName]
     {
         get => row[columnName];
-        set
+        set 
         {
             if (row[columnName] == value) return;
+            OnPropertyChanging(columnName);
             row[columnName] = value;
             OnPropertyChanged(columnName);
         }

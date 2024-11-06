@@ -11,7 +11,7 @@
                 <DataGrid Grid.Row="0"
                           x:Name="ListSource"
                           x:DataType="models:People" 
-                          ItemsSource="{Binding PeopleList}"
+                          ItemsSource="{Binding PeopleList, Mode=TwoWay}"
                           AutoGenerateColumns="True"
                           GridLinesVisibility="All"
                 >
@@ -26,8 +26,8 @@
                 >
                 <DataGrid.Columns>
                         <DataGridTextColumn Header="First Name" Binding="{Binding [FirstName]}" IsReadOnly="False"/>
-                        <DataGridTextColumn Header="Last Name" Binding="{Binding [LastName]}" />
-                        <DataGridTextColumn Header="Age" Binding="{Binding [Age]}" />
+                        <DataGridTextColumn Header="Last Name" Binding="{Binding [LastName]}" IsReadOnly="False"/>
+                        <DataGridTextColumn Header="Age" Binding="{Binding [Age]}" IsReadOnly="False"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
