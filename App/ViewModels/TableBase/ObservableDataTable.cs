@@ -1,18 +1,16 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 
 namespace DataTableGrid.ViewModels.TableBase;
 
-public class ObservableDataRowCollection : IEnumerable<ObservableDataRow>
+public class ObservableDataTable : IEnumerable<ObservableDataRow>
 {
     public ObservableDataRow this[int index] => observableRows[index];
     private readonly DataTable table;
-    private readonly List<ObservableDataRow> observableRows = new();
-    //private readonly Func<DataRow, T> rowFactory;
+    private readonly List<ObservableDataRow> observableRows = [];
 
-    public ObservableDataRowCollection(DataTable table)
+    public ObservableDataTable(DataTable table)
     {
         this.table = table;
         foreach (DataRow row in table.Rows)
@@ -29,4 +27,5 @@ public class ObservableDataRowCollection : IEnumerable<ObservableDataRow>
             yield return row;
         }
     }
+    public DataColumnCollection Columns => table.Columns;
 }

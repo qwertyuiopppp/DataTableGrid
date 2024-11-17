@@ -8,8 +8,9 @@ internal class PeopleTable : DataTable
     {
         Columns.Add("Name");
         Columns.Add("Age");
-        Rows.Add("John Doe", 42);
-        Rows.Add("Jane Doe", 39);
-        Rows.Add("Sammy Doe", 13);
+        Columns.Add("Address");
+        Rows.Add("John Doe", 42, "123 Main St");
+        Rows.Add("Jane Doe", 39, "456 Elm St");
+        Rows.Add("Sammy Doe", 13, "789 Oak St");
     }
 }

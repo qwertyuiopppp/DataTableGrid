@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -12,16 +13,26 @@ public static class TableViewLauncher
     public static void Run()
     {
         PeopleTable peopleTable = new();
-        ObservableDataRowCollection peopleList = new(peopleTable);//, row => new ObservableDataRow(row));
+        ObservableDataTable peopleList = new(peopleTable);//, row => new ObservableDataRow(row));
         Window window1 = new TableView(peopleList) { Title = "Please edit the data (View1)" };
         Window window2 = new TableView(peopleList) { Title = "Please edit the data (View2)" };
+        Window window3 = new TableView(peopleTable) { Title = "Dynamically created Win 1" };
+        Window window4 = new TableView(peopleTable) { Title = "Dynamically created Win 2" };
     }
 
 }
 
 internal partial class TableView : Window
 {
-    internal TableView(ObservableDataRowCollection people)
+    internal TableView(DataTable people)
+    {
+        InitializeComponent();
+        DataTableGridView dataTableGridView = new DataTableGridView(people);
+        Content = dataTableGridView;
+        Width = 375; Height = 350;
+        Show();
+    }
+    internal TableView(ObservableDataTable people)
     {
         InitializeComponent();
         Grid grid = new();
@@ -42,7 +53,7 @@ internal partial class TableView : Window
         Show();
 
     }
-    private DataGrid SetupGrid(ObservableDataRowCollection people)
+    private DataGrid SetupGrid(ObservableDataTable people)
     {
         DataGrid dataGrid = new()
         {
