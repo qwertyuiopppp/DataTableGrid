@@ -1,15 +1,24 @@
-using System.Collections;
 using System.Data;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Media;
 using DataTableGrid.ViewModels.TableBase;
 
 namespace DataTableGrid.Views;
 
+/// <summary>
+/// Provides methods for launching and managing TableView instances.
+/// </summary>
 public static class TableViewLauncher
 {
+    /// <summary>
+    /// Initializes and displays multiple TableView windows with different data sources.
+    /// </summary>
+    /// <remarks>
+    /// This method creates four windows:
+    /// - Two windows sharing an ObservableDataTable source.
+    /// - Two windows using a PeopleTable source.
+    /// Each window is initialized with a unique title for identification.
+    /// </remarks>
     public static void Run()
     {
         PeopleTable peopleTable = new();
@@ -19,11 +28,14 @@ public static class TableViewLauncher
         Window window3 = new TableView(peopleTable) { Title = "Dynamically created Win 1" };
         Window window4 = new TableView(peopleTable) { Title = "Dynamically created Win 2" };
     }
-
 }
 
 internal partial class TableView : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the TableView class using a DataTable as the data source.
+    /// </summary>
+    /// <param name="people">The DataTable containing the people data to be displayed.</param>
     internal TableView(DataTable people)
     {
         InitializeComponent();
@@ -32,6 +44,11 @@ internal partial class TableView : Window
         Width = 375; Height = 350;
         Show();
     }
+
+    /// <summary>
+    /// Initializes a new instance of the TableView class using an ObservableDataTable as the data source.
+    /// </summary>
+    /// <param name="people">The ObservableDataTable containing the people data to be displayed.</param>
     internal TableView(ObservableDataTable people)
     {
         InitializeComponent();
@@ -53,6 +70,12 @@ internal partial class TableView : Window
         Show();
 
     }
+
+    /// <summary>
+    /// Sets up and configures a DataGrid for displaying people data.
+    /// </summary>
+    /// <param name="people">The ObservableDataTable containing the people data to be displayed in the DataGrid.</param>
+    /// <returns>A configured DataGrid object ready for display.</returns>
     private DataGrid SetupGrid(ObservableDataTable people)
     {
         DataGrid dataGrid = new()
@@ -78,6 +101,10 @@ internal partial class TableView : Window
         return dataGrid;
     }
 
+    /// <summary>
+    /// Generates an informational string about the TableView and its functionality.
+    /// </summary>
+    /// <returns>A string containing detailed information about the TableView's features and behavior.</returns>
     private string GetInfo()
     {
         string s = "";
