@@ -12,7 +12,7 @@ public static class TableViewLauncher
     public static void Run()
     {
         PeopleTable peopleTable = new();
-        ObservableDataRowCollection<ObservableDataRow> peopleList = new(peopleTable, row => new ObservableDataRow(row));
+        ObservableDataRowCollection peopleList = new(peopleTable);//, row => new ObservableDataRow(row));
         Window window1 = new TableView(peopleList) { Title = "Please edit the data (View1)" };
         Window window2 = new TableView(peopleList) { Title = "Please edit the data (View2)" };
     }
@@ -21,19 +21,20 @@ public static class TableViewLauncher
 
 internal partial class TableView : Window
 {
-    internal TableView(ObservableDataRowCollection<ObservableDataRow> people)
+    internal TableView(ObservableDataRowCollection people)
     {
         InitializeComponent();
         Grid grid = new();
-        grid.RowDefinitions = new RowDefinitions("*, 10, Auto");
+        grid.RowDefinitions = new RowDefinitions("*, 10");
 
 
         DataGrid dataGrid = SetupGrid(people);
         grid.Children.Add(dataGrid);
 
-        TextBlock info = new() { Text = GetInfo(), Margin = new Thickness(5) };
-        grid.Children.Add(info);
-        Grid.SetRow(info, 2);
+        // grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });   
+        // TextBlock info = new() { Text = GetInfo(), Margin = new Thickness(5) };
+        // grid.Children.Add(info);
+        // Grid.SetRow(info, 2);
 
 
         Content = grid;
@@ -41,21 +42,27 @@ internal partial class TableView : Window
         Show();
 
     }
-    private DataGrid SetupGrid(ObservableDataRowCollection<ObservableDataRow> people)
+    private DataGrid SetupGrid(ObservableDataRowCollection people)
     {
         DataGrid dataGrid = new()
         {
             ItemsSource = people,
+            DataContext = people,
             AutoGenerateColumns = false,
         };
-        //Two way binding works as expected for the following two bindings 
-        dataGrid.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding("Name") });
-        dataGrid.Columns.Add(new DataGridTextColumn { Header = "Age", Binding = new Binding("Age") });
 
-        //For the following two bindings, the texboxes updates the underlying data source, but the texboxes do not respond to Property changed events.
-        //In addition, I have to set IsReadOnly to false to enable editing.
-        dataGrid.Columns.Add(new DataGridTextColumn { Header = "Name", Binding = new Binding("[0]"), IsReadOnly = false, Foreground = Brushes.Red });
-        dataGrid.Columns.Add(new DataGridTextColumn { Header = "Age", Binding = new Binding("[1]"), IsReadOnly = false, Foreground = Brushes.Red });
+        dataGrid.Columns.Add(new DataGridTextColumn
+        {
+            Header = "Name",
+            Binding = new Binding("[0].Value"),
+            IsReadOnly = false,
+        });
+        dataGrid.Columns.Add(new DataGridTextColumn
+        {
+            Header = "Age",
+            Binding = new Binding("[1].Value"),
+            IsReadOnly = false,
+        });
         Grid.SetRow(dataGrid, 0);
         return dataGrid;
     }
