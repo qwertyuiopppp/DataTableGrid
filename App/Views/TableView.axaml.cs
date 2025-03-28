@@ -1,6 +1,11 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Markup.Xaml.Templates;
 using DataTableGrid.ViewModels.TableBase;
 
 namespace DataTableGrid.Views;
@@ -71,6 +76,11 @@ internal partial class TableView : Window
 
     }
 
+    public ObservableCollection<string> Address { get; set; } = new()
+    {
+        "1", "2", "3", "4", "5", "6", "7", "8", "9"
+    };
+
     /// <summary>
     /// Sets up and configures a DataGrid for displaying people data.
     /// </summary>
@@ -95,6 +105,40 @@ internal partial class TableView : Window
         {
             Header = "Age",
             Binding = new Binding("[1].Value"),
+            IsReadOnly = false,
+        });
+        dataGrid.Columns.Add(new DataGridTemplateColumn()
+        {
+            Header = "addr",
+            //Binding = new Binding("[1].Value"),
+            CellTemplate = new FuncDataTemplate<object>((obj,_) =>
+            {
+                var tb = new TextBlock()
+                {
+                    Text = "nihao"
+                };
+                //tb.Bind(TextBlock.TextProperty, new Binding("[2].Value"));
+                
+                //return tb;
+                
+
+                
+                var combobox = new ComboBox()
+                {
+                    ItemsSource = new List<string>() { "diyige","dierge" },
+                    Width = 200, // 可选: 设置宽度
+                    Height = 30, // 可选: 设置高度
+                };
+
+                // 创建一个垂直 StackPanel 布局容器
+                var stackPanel = new StackPanel()
+                {
+                    
+                    Children = { combobox } // 将 ComboBox 添加到 StackPanel 的 Children 集合中
+                };
+                //combobox.Bind(ComboBox.ItemsSourceProperty, new Binding("[2].Value"));
+                return stackPanel;
+            }),
             IsReadOnly = false,
         });
         Grid.SetRow(dataGrid, 0);
