@@ -1,11 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Styling;
 using DataTableGrid.ViewModels.TableBase;
 
 namespace DataTableGrid.Views;
@@ -29,9 +34,9 @@ public static class TableViewLauncher
         PeopleTable peopleTable = new();
         ObservableDataTable peopleList = new(peopleTable);//, row => new ObservableDataRow(row));
         Window window1 = new TableView(peopleList) { Title = "Please edit the data (View1)" };
-        Window window2 = new TableView(peopleList) { Title = "Please edit the data (View2)" };
-        Window window3 = new TableView(peopleTable) { Title = "Dynamically created Win 1" };
-        Window window4 = new TableView(peopleTable) { Title = "Dynamically created Win 2" };
+        //Window window2 = new TableView(peopleList) { Title = "Please edit the data (View2)" };
+        //Window window3 = new TableView(peopleTable) { Title = "Dynamically created Win 1" };
+        //Window window4 = new TableView(peopleTable) { Title = "Dynamically created Win 2" };
     }
 }
 
@@ -57,6 +62,99 @@ internal partial class TableView : Window
     internal TableView(ObservableDataTable people)
     {
         InitializeComponent();
+        
+        
+         MenuItems =
+        [
+            new MenuItemViewModel
+            {
+                Header = "Theme",
+                Items =
+                [
+                    new MenuItemViewModel
+                    {
+                        Header = "Auto",
+                        //Command = FollowSystemThemeCommand
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "Aquatic",
+                        //Command = SelectThemeCommand,
+                        //CommandParameter = SemiTheme.Aquatic
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "Desert",
+                        //Command = SelectThemeCommand,
+                        //CommandParameter = SemiTheme.Desert
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "Dusk",
+                        //Command = SelectThemeCommand,
+                        //CommandParameter = SemiTheme.Dusk
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "NightSky",
+                        //Command = SelectThemeCommand,
+                        //CommandParameter = SemiTheme.NightSky
+                    },
+                ]
+            },
+            new MenuItemViewModel
+            {
+                Header = "Locale",
+                Items =
+                [
+                    new MenuItemViewModel
+                    {
+                        Header = "简体中文",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("zh-cn")
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "English",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("en-us")
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "日本語",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("ja-jp")
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "Українська",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("uk-ua")
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "Русский",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("ru-ru")
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "繁體中文",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("zh-tw")
+                    },
+                    new MenuItemViewModel
+                    {
+                        Header = "Deutsch",
+                        //Command = SelectLocaleCommand,
+                        //CommandParameter = new CultureInfo("de-de")
+                    },
+                ]
+            }
+        ];
+        
+        
+        
         Grid grid = new();
         grid.RowDefinitions = new RowDefinitions("*, 10");
 
@@ -81,6 +179,8 @@ internal partial class TableView : Window
         "1", "2", "3", "4", "5", "6", "7", "8", "9"
     };
 
+    public IReadOnlyList<MenuItemViewModel> MenuItems { get; }
+    
     /// <summary>
     /// Sets up and configures a DataGrid for displaying people data.
     /// </summary>
@@ -88,6 +188,9 @@ internal partial class TableView : Window
     /// <returns>A configured DataGrid object ready for display.</returns>
     private DataGrid SetupGrid(ObservableDataTable people)
     {
+        
+         
+        
         DataGrid dataGrid = new()
         {
             ItemsSource = people,
@@ -110,38 +213,104 @@ internal partial class TableView : Window
         dataGrid.Columns.Add(new DataGridTemplateColumn()
         {
             Header = "addr",
-            //Binding = new Binding("[1].Value"),
-            CellTemplate = new FuncDataTemplate<object>((obj,_) =>
+            CellTemplate = new FuncDataTemplate<ObservableDataRow>((row,_) =>
             {
-                var tb = new TextBlock()
-                {
-                    Text = "nihao"
-                };
-                //tb.Bind(TextBlock.TextProperty, new Binding("[2].Value"));
-                
-                //return tb;
-                
-
-                
                 var combobox = new ComboBox()
                 {
-                    ItemsSource = new List<string>() { "diyige","dierge" },
-                    Width = 200, // 可选: 设置宽度
-                    Height = 30, // 可选: 设置高度
+                    ItemsSource = Address,
+                    Width = 100,
+                    Height = 30
                 };
+    
+                // 绑定到当前行的第 3 个单元格（索引 2）的值
+                combobox.Bind(ComboBox.SelectedItemProperty, 
+                    new Binding("[2].Value") { 
+                        Source = row,  // 明确指定绑定源为当前行
+                        Mode = BindingMode.TwoWay 
+                    });
 
-                // 创建一个垂直 StackPanel 布局容器
                 var stackPanel = new StackPanel()
                 {
-                    
-                    Children = { combobox } // 将 ComboBox 添加到 StackPanel 的 Children 集合中
+                    Children = { combobox }
                 };
-                //combobox.Bind(ComboBox.ItemsSourceProperty, new Binding("[2].Value"));
                 return stackPanel;
             }),
             IsReadOnly = false,
         });
+        
+        
+        dataGrid.Columns.Add(new DataGridTemplateColumn()
+        {
+            Header = "bumen",
+            CellTemplate = new FuncDataTemplate<ObservableDataRow>((row,_) =>
+            {
+                var textBlock = new TextBlock()
+                {
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                };
+                textBlock.Bind(TextBlock.TextProperty, new Binding("[3].Value")
+                {
+                    Source = row,
+                    Mode = BindingMode.TwoWay
+                });
+
+                var menuFlyout = new MenuFlyout()
+                {
+                    ItemsSource = MenuItems
+                };
+
+                var button = new Button()
+                {
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Margin =  new Thickness(0, 0, 8, 0),
+                    Content = "编辑",
+                    Flyout =  menuFlyout,
+                    Styles =
+                    {
+                        new Style(s => s.OfType<MenuItem>())
+                        {
+                            Setters =
+                            {
+                                new Setter(MenuItem.HeaderProperty, new Binding("Header")),
+                                new Setter(MenuItem.ItemsSourceProperty, new Binding("Items")),
+                                new Setter(MenuItem.CommandProperty, new Binding("Command")),
+                                new Setter(MenuItem.CommandParameterProperty, new Binding("CommandParameter"))
+                            }
+                        }
+                    }
+                };
+                
+
+                var grid = new Grid()
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Children =
+                    {
+                        textBlock,
+                        button
+                    }
+                };
+                
+                
+                return grid;
+            }),
+            IsReadOnly = false,
+        });
+        
         Grid.SetRow(dataGrid, 0);
+
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                
+                await Task.Delay(1000);
+                var a  = (ObservableDataCell)people[0][2];
+                Console.WriteLine(a?.Value?.ToString());
+            }
+        });
         return dataGrid;
     }
 
@@ -164,4 +333,12 @@ internal partial class TableView : Window
         s += "Please check TableView.axaml.cs and\nObservableDataRow.cs\n";
         return s;
     }
+}
+
+public class MenuItemViewModel
+{
+    public string? Header { get; set; }
+    public ICommand? Command { get; set; }
+    public object? CommandParameter { get; set; }
+    public IList<MenuItemViewModel>? Items { get; set; }
 }
